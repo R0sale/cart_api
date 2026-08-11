@@ -22,5 +22,6 @@ func (handler CreateCartHandler) ServeHTTP(writer http.ResponseWriter, request *
 		return
 	}
 
+	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(cart)
 }

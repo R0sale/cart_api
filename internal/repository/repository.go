@@ -2,12 +2,12 @@ package repository
 
 import "database/sql"
 
-type repository struct {
+type sqlRepo struct {
 	db *sql.DB
 }
 
-func NewRepository(currentDb *sql.DB) *repository {
-	return &repository{
+func NewRepository(currentDb *sql.DB) *sqlRepo {
+	return &sqlRepo{
 		db: currentDb,
 	}
 }

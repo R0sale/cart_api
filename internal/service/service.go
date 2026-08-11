@@ -1,11 +1,11 @@
 package service
 
-type service struct {
+type cartService struct {
 	repository repository
 }
 
-func NewService(rep repository) *service {
-	return &service{
+func NewService(rep repository) *cartService {
+	return &cartService{
 		repository: rep,
 	}
 }

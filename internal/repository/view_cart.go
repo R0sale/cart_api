@@ -1,8 +1,23 @@
 package repository
 
-import "cart_api/internal/entity"
+import (
+	"cart_api/internal/entity"
+	repositoryerrors "cart_api/internal/errors/repository_errors"
+)
 
-func (r repository) GetCartById(cartId int) (*entity.Cart, error) {
+func (r *sqlRepo) GetCartById(cartId int) (*entity.Cart, error) {
+	existsQuery := `SELECT EXISTS(SELECT 1 FROM carts WHERE id = $1)`
+
+	var exists bool
+	err := r.db.QueryRow(existsQuery, cartId).Scan(&exists)
+	if err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return nil, repositoryerrors.ErrCartNotFound
+	}
+
 	query := `SELECT id, cart_id, product, price FROM carts_items
 			WHERE cart_id = $1`
 

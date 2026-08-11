@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	repositoryerrors "cart_api/internal/errors/repository_errors"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 )
@@ -25,7 +27,12 @@ func (handler ViewCartHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 
 	cart, err := handler.service.ViewCart(id)
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusNotFound)
+		if errors.Is(err, repositoryerrors.ErrCartNotFound) {
+			http.Error(writer, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

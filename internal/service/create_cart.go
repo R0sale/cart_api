@@ -2,7 +2,7 @@ package service
 
 import "cart_api/internal/entity"
 
-func (s service) CreateCart() (*entity.Cart, error) {
+func (s *cartService) CreateCart() (*entity.Cart, error) {
 	cart, err := s.repository.AddCart()
 	if err != nil {
 		return nil, err
