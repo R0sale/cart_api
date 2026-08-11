@@ -3,6 +3,7 @@ package handlers
 import (
 	"cart_api/internal/config"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -15,5 +16,5 @@ func ConfigureServer(cfg config.Config, service cartService) {
 	mux.Handle("GET /api/v1/cart/{id}", viewCartHandler)
 
 	serverAddress := fmt.Sprintf(":%d", cfg.Server.Port)
-	http.ListenAndServe(serverAddress, mux)
+	log.Fatal(http.ListenAndServe(serverAddress, mux))
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (r repository) AddCart() (*entity.Cart, error) {
+func (r *sqlRepo) AddCart() (*entity.Cart, error) {
 	query := `INSERT INTO carts
 			DEFAULT VALUES
 			RETURNING id`

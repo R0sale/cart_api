@@ -30,5 +30,5 @@ func main() {
 
 	repository := repository.NewRepository(db)
 	service := service.NewService(repository)
-	handlers.ConfigureServer(*cfg, *service)
+	handlers.ConfigureServer(*cfg, service)
 }
