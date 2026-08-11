@@ -6,11 +6,13 @@ import (
 	"net/http"
 )
 
-func ConfigureServer(cfg config.Config, service CartService) {
+func ConfigureServer(cfg config.Config, service cartService) {
 	mux := http.NewServeMux()
 
 	createCartHandler := NewCreateCartHandler(service)
-	mux.Handle("/api/v1/cart", createCartHandler)
+	viewCartHandler := NewViewCartHandler(service)
+	mux.Handle("POST /api/v1/cart", createCartHandler)
+	mux.Handle("GET /api/v1/cart/{id}", viewCartHandler)
 
 	serverAddress := fmt.Sprintf(":%d", cfg.Server.Port)
 	http.ListenAndServe(serverAddress, mux)

@@ -6,10 +6,10 @@ import (
 )
 
 type CreateCartHandler struct {
-	service CartService
+	service cartService
 }
 
-func NewCreateCartHandler(service CartService) *CreateCartHandler {
+func NewCreateCartHandler(service cartService) *CreateCartHandler {
 	return &CreateCartHandler{
 		service: service,
 	}
