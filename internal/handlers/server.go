@@ -12,7 +12,9 @@ func ConfigureServer(cfg config.Config, service cartService) {
 
 	createCartHandler := NewCreateCartHandler(service)
 	viewCartHandler := NewViewCartHandler(service)
+	addItemHandler := NewAddItemHandler(service)
 	mux.Handle("POST /api/v1/cart", createCartHandler)
+	mux.Handle("POST /api/v1/carts/{id}/items", addItemHandler)
 	mux.Handle("GET /api/v1/cart/{id}", viewCartHandler)
 
 	serverAddress := fmt.Sprintf(":%d", cfg.Server.Port)
