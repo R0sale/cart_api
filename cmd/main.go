@@ -4,6 +4,8 @@ import (
 	"cart_api/internal/config"
 	"cart_api/internal/db"
 	"cart_api/internal/handlers"
+	"cart_api/internal/repository"
+	"cart_api/internal/service"
 	"log"
 	"os"
 )
@@ -26,5 +28,7 @@ func main() {
 
 	defer db.Close()
 
-	handlers.ConfigureServer(*cfg)
+	repository := repository.NewRepository(db)
+	service := service.NewService(repository)
+	handlers.ConfigureServer(*cfg, *service)
 }
