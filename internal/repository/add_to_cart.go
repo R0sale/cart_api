@@ -2,25 +2,38 @@ package repository
 
 import (
 	"cart_api/internal/entity"
-	"errors"
+	repositoryerrors "cart_api/internal/errors/repository_errors"
 )
 
 func (r *sqlRepo) AddItemToCart(item entity.CartItem) (*entity.CartItem, error) {
-	query := `INSERT INTO carts_items (cart_id, product, price) SELECT $1, $2, $3
-			WHERE EXISTS(SELECT 1 FROM carts WHERE id = $1) AND
-			(SELECT COUNT(1) FROM carts_items WHERE cart_id = $1) < 5
-			RETURNING id`
+	query := `WITH checks AS (
+		SELECT
+			EXISTS (SELECT 1 FROM carts WHERE id = $1) AS cart_exists) AS cart_exists,
+			(SELECT COUNT(1) FROM carts_items WHERE cart_id = $1) < 5 AS items_full
+	)
+	inserted AS (
+		INSERT INTO carts_items (cart_id, product, price)
+		SELECT $1, $2, $3
+		FROM checks
+		WHERE cart_exists AND items_full
+		RETURNING id
+	)
+		SELECT checks.cart_exists, checks.items_full, inserted.id
+		FROM checks
+		LEFT JOIN inserted ON true`
 
-	var newItemId int
-	err := r.db.QueryRow(query, item.CartId, item.Product, item.Price).Scan(&newItemId)
+	var cartExists, items_full bool
+	err := r.db.QueryRow(query, item.CartId, item.Product, item.Price).Scan(&cartExists, &items_full, &item.Id)
 	if err != nil {
-		return nil, errors.New("couldn't proceed with adding the item to the cart with id %d. Any of two rules is violated: cart already has 5 items, cart doesn't exists")
+		return nil, err
 	}
 
-	return &entity.CartItem{
-		Id:      newItemId,
-		CartId:  item.CartId,
-		Product: item.Product,
-		Price:   item.Price,
-	}, nil
+	switch {
+	case !cartExists:
+		return nil, repositoryerrors.ErrCartNotFound
+	case !items_full:
+		return nil, repositoryerrors.ErrCartIsFull
+	}
+
+	return &item, nil
 }

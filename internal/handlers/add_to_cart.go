@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"cart_api/internal/entity"
+	repositoryerrors "cart_api/internal/errors/repository_errors"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 )
@@ -19,7 +21,6 @@ func NewAddItemHandler(service cartService) *AddItemHandler {
 
 func (handler *AddItemHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var newItem entity.NewItemDto
-	defer r.Body.Close()
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -37,8 +38,16 @@ func (handler *AddItemHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	item, err := handler.service.AddItemToCart(cartId, newItem)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		if errors.Is(err, repositoryerrors.ErrCartIsFull) {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		} else if errors.Is(err, repositoryerrors.ErrCartNotFound) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
