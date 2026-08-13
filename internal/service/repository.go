@@ -7,4 +7,5 @@ type repository interface {
 	GetCartById(cartId int) (*entity.Cart, error)
 	AddItemToCart(item entity.CartItem) (*entity.CartItem, error)
 	RemoveItemFromCart(cartId int, itemId int) error
+	UpdateCartItem(cartId int, itemId int, updatedItem entity.CartItem) (*entity.CartItem, error)
 }
