@@ -15,13 +15,13 @@ func NewCreateCartHandler(service cartService) *CreateCartHandler {
 	}
 }
 
-func (handler CreateCartHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func (handler CreateCartHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cart, err := handler.service.CreateCart()
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(cart)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(cart)
 }
