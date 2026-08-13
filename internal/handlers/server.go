@@ -13,9 +13,11 @@ func ConfigureServer(cfg config.Config, service cartService) {
 	createCartHandler := NewCreateCartHandler(service)
 	viewCartHandler := NewViewCartHandler(service)
 	addItemHandler := NewAddItemHandler(service)
+	removeFromCartHandler := NewRemoveFromCartHandler(service)
 	mux.Handle("POST /api/v1/cart", createCartHandler)
 	mux.Handle("POST /api/v1/carts/{id}/items", addItemHandler)
 	mux.Handle("GET /api/v1/cart/{id}", viewCartHandler)
+	mux.Handle("DELETE /api/v1/carts/{id}/items/{itemId}", removeFromCartHandler)
 
 	serverAddress := fmt.Sprintf(":%d", cfg.Server.Port)
 	log.Fatal(http.ListenAndServe(serverAddress, mux))
