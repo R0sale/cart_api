@@ -7,4 +7,5 @@ type cartService interface {
 	ViewCart(cartId int) (*entity.Cart, error)
 	AddItemToCart(cartId int, item entity.NewItemDto) (*entity.CartItem, error)
 	RemoveFromCart(cartId int, itemId int) error
+	UpdateCartItem(cartId int, itemId int, updatedItem entity.NewItemDto) (*entity.CartItem, error)
 }
