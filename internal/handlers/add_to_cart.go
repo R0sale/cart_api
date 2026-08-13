@@ -28,6 +28,14 @@ func (handler *AddItemHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	if newItem.Product == "" {
+		http.Error(w, "product name is required", http.StatusBadRequest)
+		return
+	} else if newItem.Price < 0 {
+		http.Error(w, "price must be a non-negative value", http.StatusBadRequest)
+		return
+	}
+
 	cartId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "couldn't parse the cart id from the url", http.StatusBadRequest)
